@@ -23,14 +23,14 @@ export type Path = ReadonlyArray<string | number>;
 
 /**
  * Type of an argument of [StateMethods.set](#set).
- * 
+ *
  * @typeparam S Type of a value of a state
  */
 export type SetStateAction<S> = (S | Promise<S>) | ((prevState: S) => (S | Promise<S>));
 
 /**
  * Type of an argument of [StateMethods.merge](#merge).
- * 
+ *
  * @typeparam S Type of a value of a state
  */
 export type SetPartialStateAction<S> =
@@ -41,14 +41,14 @@ export type SetPartialStateAction<S> =
 
 /**
  * Type of an argument of [createState](#createstate) and [useState](#usestate).
- * 
+ *
  * @typeparam S Type of a value of a state
  */
 export type SetInitialStateAction<S> = S | Promise<S> | (() => S | Promise<S>)
 
 /**
  * Special symbol which might be returned by onPromised callback of [StateMethods.map](#map) function.
- * 
+ *
  * [Learn more...](https://hookstate.js.org/docs/asynchronous-state#executing-an-action-when-state-is-loaded)
  */
 export const postpone = Symbol('postpone')
@@ -56,14 +56,14 @@ export const postpone = Symbol('postpone')
 /**
  * Special symbol which might be used to delete properties
  * from an object calling [StateMethods.set](#set) or [StateMethods.merge](#merge).
- * 
+ *
  * [Learn more...](https://hookstate.js.org/docs/nested-state#deleting-existing-element)
  */
 export const none = Symbol('none') as StateValueAtPath;
 
 /**
  * Return type of [StateMethods.keys](#readonly-keys).
- * 
+ *
  * @typeparam S Type of a value of a state
  */
 export type InferredStateKeysType<S> =
@@ -74,7 +74,7 @@ export type InferredStateKeysType<S> =
 
 /**
  * Return type of [StateMethods.map()](#map).
- * 
+ *
  * @typeparam S Type of a value of a state
  */
 export type InferredStateOrnullType<S> =
@@ -84,9 +84,9 @@ export type InferredStateOrnullType<S> =
 /**
  * For plugin developers only.
  * An instance to manipulate the state in more controlled way.
- * 
+ *
  * @typeparam S Type of a value of a state
- * 
+ *
  * [Learn more...](https://hookstate.js.org/docs/writing-plugin)
  */
 export interface PluginStateControl<S> {
@@ -96,19 +96,19 @@ export interface PluginStateControl<S> {
     getUntracked(): S;
     /**
      * Set new state value, but do not trigger rerender.
-     * 
+     *
      * @param newValue new value to set to a state.
      */
     setUntracked(newValue: SetStateAction<S>): Path[];
     /**
      * Merge new state value, but do not trigger rerender.
-     * 
+     *
      * @param mergeValue new partial value to merge with the current state value and set.
      */
     mergeUntracked(mergeValue: SetPartialStateAction<S>): Path[];
     /**
      * Trigger rerender for hooked states, where values at the specified paths are used.
-     * 
+     *
      * @param paths paths of the state variables to search for being used by components and rerender
      */
     rerender(paths: Path[]): void;
@@ -116,7 +116,7 @@ export interface PluginStateControl<S> {
 
 /**
  * An interface to manage a state in Hookstate.
- * 
+ *
  * @typeparam S Type of a value of a state
  */
 export interface StateMethods<S> {
@@ -171,13 +171,13 @@ export interface StateMethods<S> {
      * True if state value is not yet available (eg. equal to a promise)
      */
     readonly promised: boolean;
-    
+
     /**
      * If a state was set to a promise and the promise was rejected,
      * this property will return the error captured from the promise rejection
      */
     readonly error: StateErrorAtRoot | undefined;
-    
+
     /**
      * Unwraps and returns the underlying state value referred by
      * [path](#readonly-path) of this state instance.
@@ -185,7 +185,7 @@ export interface StateMethods<S> {
      * It returns the same result as [StateMethods.value](#readonly-value) method.
      */
     get(): S;
-    
+
     /**
      * Sets new value for a state.
      * If `this.path === []`,
@@ -201,7 +201,7 @@ export interface StateMethods<S> {
      * The function receives the current state value as an argument.
      */
     set(newValue: SetStateAction<S>): void;
-    
+
     /**
      * Similarly to [set](#set) method updates state value.
      *
@@ -214,27 +214,27 @@ export interface StateMethods<S> {
      * value with the argument converted to string and sets the result to the state.
      */
     merge(newValue: SetPartialStateAction<S>): void;
-    
+
     /**
      * Returns nested state by key.
      * `state.nested('myprop')` returns the same as `state.myprop` or `state['myprop']`,
      * but also works for properties, which names collide with names of state methods.
-     * 
+     *
      * [Learn more about nested states...](https://hookstate.js.org/docs/nested-state)
-     * 
+     *
      * @param key child property name or index
      */
     nested<K extends keyof S>(key: K): State<S[K]>;
-    
+
     /**
      * Runs the provided action callback with optimised re-rendering.
      * Updating state within a batch action does not trigger immediate rerendering.
      * Instead, all required rerendering is done once the batch is finished.
-     * 
+     *
      * [Learn more about batching...](https://hookstate.js.org/docs/performance-batched-updates
-     * 
+     *
      * @param action callback function to execute in a batch
-     * 
+     *
      * @param context custom user's value, which is passed to plugins
      */
     batch<R, C>(
@@ -246,25 +246,25 @@ export interface StateMethods<S> {
      * If state value is null or undefined, returns state value.
      * Otherwise, it returns this state instance but
      * with null and undefined removed from the type parameter.
-     * 
+     *
      * [Learn more...](https://hookstate.js.org/docs/nullable-state)
      */
     ornull: InferredStateOrnullType<S>;
 
     /**
      * Adds plugin to the state.
-     * 
+     *
      * [Learn more...](https://hookstate.js.org/docs/extensions-overview)
      */
     attach(plugin: () => Plugin): State<S>
-    
+
     /**
      * For plugin developers only.
      * It is a method to get the instance of the previously attached plugin.
      * If a plugin has not been attached to a state,
      * it returns an Error as the first element.
      * A plugin may trhow an error to indicate that plugin has not been attached.
-     * 
+     *
      * [Learn more...](https://hookstate.js.org/docs/writing-plugin)
      */
     attach(pluginId: symbol): [PluginCallbacks | Error, PluginStateControl<S>]
@@ -285,9 +285,9 @@ export interface StateMethodsDestroy {
 
 /**
  * Type of a result of [createState](#createstate) and [useState](#usestate) functions
- * 
+ *
  * @typeparam S Type of a value of a state
- * 
+ *
  * [Learn more about global states...](https://hookstate.js.org/docs/global-state)
  * [Learn more about local states...](https://hookstate.js.org/docs/local-state)
  * [Learn more about nested states...](https://hookstate.js.org/docs/nested-state)
@@ -366,7 +366,7 @@ export interface PluginCallbacksOnBatchArgument {
 /**
  * For plugin developers only.
  * Set of callbacks, a plugin may subscribe to.
- * 
+ *
  * [Learn more...](https://hookstate.js.org/docs/writing-plugin)
  */
 export interface PluginCallbacks {
@@ -379,7 +379,7 @@ export interface PluginCallbacks {
 /**
  * For plugin developers only.
  * Hookstate plugin specification and factory method.
- * 
+ *
  * [Learn more...](https://hookstate.js.org/docs/writing-plugin)
  */
 export interface Plugin {
@@ -558,7 +558,7 @@ export function useHookstate<S>(
             // https://github.com/apollographql/apollo-client/issues/5870#issuecomment-689098185
             const isEffectExecutedAfterRender = React.useRef(false);
             isEffectExecutedAfterRender.current = false; // not yet...
-            
+
             React.useEffect(() => {
                 isEffectExecutedAfterRender.current = true; // ... and now, yes!
                 // The state is not destroyed intentionally
@@ -582,7 +582,7 @@ export function useHookstate<S>(
  * particularly usefull for creating *scoped* states.
  *
  * [Learn more...](https://hookstate.js.org/docs/using-without-statehook)
- * 
+ *
  * @typeparam S Type of a value of a state
  */
 export function StateFragment<S>(
@@ -594,9 +594,9 @@ export function StateFragment<S>(
 /**
  * Allows to use a state without defining a functional react component.
  * See more at [StateFragment](#statefragment)
- * 
+ *
  * [Learn more...](https://hookstate.js.org/docs/using-without-statehook)
- * 
+ *
  * @typeparam S Type of a value of a state
  */
 export function StateFragment<S>(
@@ -618,7 +618,7 @@ export function StateFragment<S>(
 /**
  * A plugin which allows to opt-out from usage of Javascript proxies for
  * state usage tracking. It is useful for performance tuning.
- * 
+ *
  * [Learn more...](https://hookstate.js.org/docs/performance-managed-rendering#downgraded-plugin)
  */
 export function Downgraded(): Plugin { // tslint:disable-line: function-name
@@ -657,13 +657,13 @@ export interface DevToolsExtensions {
  * You can activate development tools from `@hookstate/devtools`package,
  * for example. If no development tools are activated,
  * it returns an instance of dummy tools, which do nothing, when called.
- * 
+ *
  * [Learn more...](https://hookstate.js.org/docs/devtools)
- * 
+ *
  * @param state A state to relate to the extension.
- * 
+ *
  * @returns Interface to interact with the development tools for a given state.
- * 
+ *
  * @typeparam S Type of a value of a state
  */
 export function DevTools<S>(state: State<S>): DevToolsExtensions {
@@ -1096,7 +1096,7 @@ class StateMethodsImpl<S> implements StateMethods<S>, StateMethodsDestroy, Subsc
     private childrenCache: Record<string | number, StateMethodsImpl<StateValueAtPath>> | undefined;
     private selfCache: State<S> | undefined;
     private valueCache: StateValueAtPath = ValueUnusedMarker;
-    
+
     constructor(
         public readonly state: Store,
         public readonly path: Path,
@@ -1241,7 +1241,7 @@ class StateMethodsImpl<S> implements StateMethods<S>, StateMethodsDestroy, Subsc
     nested<K extends keyof S>(key: K): State<S[K]> {
         return this.child(key as string | number).self as State<S[K]>
     }
-    
+
     rerender(paths: Path[]) {
         this.state.update(paths)
     }
@@ -1260,7 +1260,7 @@ class StateMethodsImpl<S> implements StateMethods<S>, StateMethodsDestroy, Subsc
     unsubscribe(l: Subscriber) {
         this.subscribers!.delete(l);
     }
-    
+
     get isMounted(): boolean {
         return !this.onSetUsed[UnmountedMarker]
     }
@@ -1338,7 +1338,7 @@ class StateMethodsImpl<S> implements StateMethods<S>, StateMethodsDestroy, Subsc
         }
         return r;
     }
-    
+
     private valueArrayImpl(currentValue: StateValueAtPath[]): S {
         if (IsNoProxy) {
             this.isDowngraded = true
@@ -1411,7 +1411,7 @@ class StateMethodsImpl<S> implements StateMethods<S>, StateMethodsDestroy, Subsc
         if (this.selfCache) {
             return this.selfCache
         }
-        
+
         const getter = (_: object, key: PropertyKey) => {
             if (key === self) {
                 return this
@@ -1422,7 +1422,7 @@ class StateMethodsImpl<S> implements StateMethods<S>, StateMethodsDestroy, Subsc
             if (key === 'toJSON') {
                 throw new StateInvalidUsageError(this.path, ErrorId.ToJson_State);
             }
-            
+
             switch (key) {
                 case 'path':
                     return this.path
@@ -1455,7 +1455,7 @@ class StateMethodsImpl<S> implements StateMethods<S>, StateMethodsDestroy, Subsc
                 default:
                     // fall down
             }
-            
+
             const currentDowngraded = this.isDowngraded; // relevant for IE11 only
             const currentValue = this.get(); // IE11 marks this as downgraded
             this.isDowngraded = currentDowngraded; // relevant for IE11 only
@@ -1488,7 +1488,7 @@ class StateMethodsImpl<S> implements StateMethods<S>, StateMethodsDestroy, Subsc
             }
             return this.nested(key.toString() as keyof S)
         }
-        
+
         if (IsNoProxy) {
             // minimal support for IE11
             const result = (Array.isArray(this.valueSource) ? [] : {}) as State<S>;
@@ -1511,7 +1511,7 @@ class StateMethodsImpl<S> implements StateMethods<S>, StateMethodsDestroy, Subsc
             this.selfCache = result;
             return this.selfCache
         }
-        
+
         this.selfCache = proxyWrap(this.path, this.valueSource,
             () => {
                 this.get() // get latest & mark used
@@ -1524,7 +1524,7 @@ class StateMethodsImpl<S> implements StateMethods<S>, StateMethodsDestroy, Subsc
             false) as unknown as State<S>;
         return this.selfCache
     }
-    
+
     get promised(): boolean {
         const currentValue = this.get(true) // marks used
         if (currentValue === none && this.state.promised && !this.state.promised.fullfilled) {
@@ -1588,7 +1588,7 @@ class StateMethodsImpl<S> implements StateMethods<S>, StateMethodsDestroy, Subsc
         } else {
             return [
                 this.state.getPlugin(p) ||
-                    (new StateInvalidUsageError(this.path, ErrorId.GetUnknownPlugin, p.toString())), 
+                    (new StateInvalidUsageError(this.path, ErrorId.GetUnknownPlugin, p.toString())),
                 this
             ];
         }
@@ -1665,7 +1665,12 @@ function proxyWrap(
             }
             return false;
         },
-        get: propertyGetter,
+        get: (target, property) => {
+            if (property === '__target__') {
+                return target
+            }
+            return target[property]
+        },
         set: propertySetter,
         deleteProperty: (target, p) => {
             return onInvalidUsage(isValueProxy ?
